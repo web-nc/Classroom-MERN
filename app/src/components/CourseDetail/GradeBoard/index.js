@@ -29,6 +29,7 @@ export default function GradeBoard({
   course,
   assignments,
   handleUpdateCourse,
+  user,
 }) {
   const [rows, setRows] = useState([]);
   const columns = [
@@ -90,6 +91,7 @@ export default function GradeBoard({
     },
   });
 
+  // Handle việc thêm hoặc sửa điểm cho 1 cột điểm của 1 học sinh
   const handleEditGrade = (assignment, studentId, point, finalized) => {
     editGrade({ assignment, studentId, point }, course._id)
       .then((res) => {
@@ -119,6 +121,7 @@ export default function GradeBoard({
       });
   };
 
+  // Handle việc công bố điểm cho 1 cột điểm của 1 học sinh
   const handleFinalizedGrade = (assignment, studentId, point) => {
     finalizeGrade({ assignment, studentId }, course._id)
       .then((res) => {
@@ -158,6 +161,7 @@ export default function GradeBoard({
     });
   };
 
+  // Handle việc thêm hoặc sửa điểm cho 1 cột điểm (bằng cách import file)
   const handleUpdateAGradeColumn = (data) => {
     data.forEach((item) => {
       const { studentId, assignment, point } = item;
@@ -191,6 +195,7 @@ export default function GradeBoard({
     });
   };
 
+  // Handle việc công bố điểm cho 1 cột điểm
   const handleFinalizeColumn = (assignmentId) => {
     finalizeAssignment(assignmentId, course._id)
       .then((res) => {
@@ -230,6 +235,7 @@ export default function GradeBoard({
       });
   };
 
+  // Handle việc import 1 file (studentId, studentName)
   const handleUpdateStudentList = (data) => {
     updateGradeBoard(course._id, data)
       .then((res) => {
@@ -319,11 +325,12 @@ export default function GradeBoard({
         </Card>
       </Paper>
 
-      <ReviewRequests assignments={assignments} course={course} />
+      <ReviewRequests user={user} assignments={assignments} course={course} />
     </div>
   );
 }
 
+// Hàm tính toán GPA
 function calcGPA(row, assignments) {
   const totalAssignmentsWeight = assignments.reduce(
     (pre, cur) => pre + cur.weight,
@@ -346,6 +353,7 @@ function calcGPA(row, assignments) {
   return (GPA = Math.round(GPA / totalAssignmentsWeight));
 }
 
+// Hàm tạo thông báo để gửi đến cho học sinh
 function notificationGenerate(
   assignmentId,
   course,
@@ -357,12 +365,6 @@ function notificationGenerate(
   switch (type) {
     case "grade_published":
       description = "Điểm của bạn đã được công bố";
-      break;
-    case "review_comment":
-      description = "Yêu cầu phúc khảo của bạn có bình luận mới";
-      break;
-    case "grade_reviewed":
-      description = "Yêu cầu phúc khảo của bạn đã được giải quyết";
       break;
     case "grade_edit":
       description = "Điểm bài tập của bạn đã được cập nhật";

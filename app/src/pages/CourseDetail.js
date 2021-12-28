@@ -87,6 +87,7 @@ export default function CourseDetail() {
                   role={course.role}
                   course={course}
                   assignments={assignments}
+                  user={user}
                   handleUpdateCourse={(payload) => {
                     setCourse((prevState) => ({
                       ...prevState,

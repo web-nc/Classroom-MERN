@@ -1,13 +1,34 @@
-import { Box, Paper, Typography, IconButton, Tooltip } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  IconButton,
+  Tooltip,
+  List,
+  ListItem,
+  Divider,
+  ListItemText,
+  InputBase,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
 import React from "react";
+import SendIcon from "@mui/icons-material/Send";
 
 export default function RequestDetail({
   review,
   handleOpenDialog,
-  markReviewAsDone,
+  sendReviewComment,
 }) {
+  const [comment, setComment] = React.useState("");
+
+  const handleSendComment = (e) => {
+    e.preventDefault();
+    if (comment) {
+      sendReviewComment(review._id, comment, review.studentId);
+      setComment("");
+    }
+  };
+
   return (
     <Paper
       elevation={3}
@@ -63,45 +84,69 @@ export default function RequestDetail({
             <strong>{review.explanation}</strong>
           </Typography>
         </Box>
-        <Box className="flex">
-          <Typography variant="subtitle2" sx={{ width: "30%", flexShrink: 0 }}>
-            <strong>
-              <i>Nhận xét của giáo viên</i>
-            </strong>
-          </Typography>
-          <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
-            <strong>{review.teacherComment}</strong>
-          </Typography>
-        </Box>
-        <Box className="flex">
-          <Typography variant="subtitle2" sx={{ width: "30%", flexShrink: 0 }}>
-            <strong>
-              <i>Điểm sau khi chấm lại</i>
-            </strong>
-          </Typography>
-          <Typography variant="subtitle2" sx={{ color: "text.secondary" }}>
-            <strong>{review.updatedPoint}</strong>
-          </Typography>
-        </Box>
-      </Box>
-      <Box sx={{ display: "flex", flexDirection: "column" }}>
-        <Tooltip title="Đánh dấu là đã hoàn thành">
-          <IconButton
-            onClick={() => markReviewAsDone(review._id)}
-            sx={{ margin: "auto" }}
+        <Divider textAlign="left" sx={{ color: "text.secondary" }}>
+          <strong>Bình luận</strong>
+        </Divider>
+        <Paper sx={{ padding: "10px" }}>
+          <List>
+            {review.comments &&
+              review.comments.map((comment, index) => (
+                <ListItem key={index} sx={{ py: 0 }}>
+                  <ListItemText
+                    sx={{ my: 0 }}
+                    primary={
+                      <React.Fragment>
+                        <Typography
+                          sx={{
+                            display: "inline",
+                            color: "text.secondary",
+                          }}
+                          component="span"
+                          variant="subtitle2"
+                        >
+                          <strong>{comment.sender}:</strong> {comment.comment}
+                        </Typography>
+                      </React.Fragment>
+                    }
+                  />
+                </ListItem>
+              ))}
+          </List>
+
+          <Paper
+            elevation={3}
+            component="form"
+            onSubmit={handleSendComment}
+            sx={{
+              p: "2px 4px",
+              display: "flex",
+              alignItems: "center",
+            }}
           >
-            <FactCheckOutlinedIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Thêm nhận xét và điểm">
-          <IconButton
-            onClick={() => handleOpenDialog(review._id)}
-            sx={{ margin: "auto" }}
-          >
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Gửi bình luận"
+              onChange={(e) => setComment(e.target.value)}
+              value={comment}
+              inputProps={{ "aria-label": "Bình luận" }}
+            />
+            <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+            <IconButton type="submit" sx={{ p: "10px" }} aria-label="search">
+              <SendIcon />
+            </IconButton>
+          </Paper>
+        </Paper>
       </Box>
+      <Tooltip title="Thêm nhận xét và điểm">
+        <IconButton
+          onClick={() =>
+            handleOpenDialog({ _id: review._id, studentId: review.studentId })
+          }
+          sx={{ margin: "auto" }}
+        >
+          <EditIcon />
+        </IconButton>
+      </Tooltip>
     </Paper>
   );
 }

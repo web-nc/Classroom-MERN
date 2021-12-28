@@ -96,16 +96,17 @@ export default {
         if (!doc) return res.send(500, { error: "INVALID_INPUT" });
         updatingReview.teacherComment = teacherComment;
         updatingReview.updatedPoint = updatedPoint;
+        updatingReview.reviewed = true;
         updatingReview.save();
         res.status(200).json({ message: "UPDATE_SUCCESSFUL" });
       }
     );
   },
 
-  markAsDone: async (req, res) => {
-    const { review } = req.body.data;
+  newComment: async (req, res) => {
+    const { review, sender, comment } = req.body.data;
     const updatingReview = await Review.findById(review);
-    updatingReview.reviewed = true;
+    updatingReview.comments.push({ sender, comment });
     updatingReview.save();
     res.status(200).json({ message: "UPDATE_SUCCESSFUL" });
   },

@@ -18,6 +18,6 @@ export function sendReview(data) {
   return axios.put(API_URL, { data });
 }
 
-export function markAsDone(data) {
-  return axios.put(API_URL + "/markAsDone", { data });
+export function sendComment(data) {
+  return axios.put(API_URL + "/comment", { data });
 }

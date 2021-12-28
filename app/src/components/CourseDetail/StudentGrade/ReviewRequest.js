@@ -17,7 +17,7 @@ const paperStyle = {
   margin: "30px auto",
 };
 
-export default function RequestDialog({ reviews }) {
+export default function ReviewRequests({ reviews, sendReviewComment }) {
   return (
     <Paper elevation={10} style={paperStyle}>
       <Typography
@@ -58,7 +58,11 @@ export default function RequestDialog({ reviews }) {
           <TableBody>
             {reviews.length > 0 &&
               reviews.map((review) => (
-                <RequestRow key={review._id} review={review} />
+                <RequestRow
+                  key={review._id}
+                  sendReviewComment={sendReviewComment}
+                  review={review}
+                />
               ))}
           </TableBody>
         </Table>

@@ -11,6 +11,6 @@ router.post("/", reviewController.newReview);
 
 router.put("/", reviewController.teacherReview);
 
-router.put("/markAsDone", reviewController.markAsDone);
+router.put("/comment", reviewController.newComment);
 
 export default router;

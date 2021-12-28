@@ -15,6 +15,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { studentGetGrades } from "../../../services/grade";
+import { sendComment } from "../../../services/review";
 import { getMyReviewRequest, newReviewRequest } from "../../../services/review";
 import RequestDialog from "./RequestDialog";
 import ReviewRequest from "./ReviewRequest";
@@ -98,6 +99,30 @@ export default function StudentGrade({ course, assignments, user }) {
     setSelectedAssignment(null);
     setCurrentPoint(null);
     setIsDialogOpen(false);
+  };
+
+  const sendReviewComment = (reviewId, comment) => {
+    sendComment({
+      review: reviewId,
+      sender: user.firstname + " " + user.lastname,
+      comment,
+    })
+      .then(() => {
+        setReviews((preReviews) => {
+          return preReviews.map((review) => {
+            if (review._id === reviewId) {
+              review.comments.push({
+                sender: user.firstname + " " + user.lastname,
+                comment,
+              });
+            }
+            return review;
+          });
+        });
+      })
+      .catch((err) => {
+        toast.error("Có lỗi khi gửi bình luận");
+      });
   };
 
   const totalAssignmentsWeight = assignments.reduce(
@@ -271,7 +296,7 @@ export default function StudentGrade({ course, assignments, user }) {
         handleDialogClose={handleDialogClose}
         sendReviewRequest={handleReviewRequest}
       />
-      <ReviewRequest reviews={reviews} />
+      <ReviewRequest sendReviewComment={sendReviewComment} reviews={reviews} />
     </div>
   );
 }

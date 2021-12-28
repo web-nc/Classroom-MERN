@@ -4,12 +4,16 @@ import { toast } from "react-toastify";
 import {
   getCourseReviewRequest,
   sendReview,
-  markAsDone,
+  sendComment,
 } from "../../../../services/review";
+import { createNotification } from "../../../../services/notification";
 import RequestDetail from "./RequestDetail";
 import ReviewDialog from "./ReviewDialog";
+import { io } from "socket.io-client";
 
-export default function ReviewRequests({ assignments, course }) {
+const socket = io(process.env.REACT_APP_SOCKET_URL);
+
+export default function ReviewRequests({ assignments, course, user }) {
   const [reviews, setReviews] = React.useState([]);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [selectedReview, setSelectedReview] = React.useState(null);
@@ -19,23 +23,33 @@ export default function ReviewRequests({ assignments, course }) {
     setOpenDialog(false);
   };
 
-  const handleOpenDialog = (reviewId) => {
-    setSelectedReview(reviewId);
+  const handleOpenDialog = (review) => {
+    setSelectedReview(review);
     setOpenDialog(true);
   };
 
+  // Handle việc xử lí yêu cầu phúc khảo
   const sendReviewResult = (updatedPoint, teacherComment) => {
-    sendReview({ review: selectedReview, updatedPoint, teacherComment })
+    sendReview({ review: selectedReview._id, updatedPoint, teacherComment })
       .then((res) => {
-        setReviews((preReviews) =>
-          preReviews.map((rv) => {
-            if (rv._id === selectedReview) {
-              rv.updatedPoint = updatedPoint;
-              rv.teacherComment = teacherComment;
-            }
-            return rv;
+        setReviews(
+          reviews.filter(function (obj) {
+            return obj._id !== selectedReview._id;
           })
         );
+        toast.success("Xử lí thành công yêu cầu phúc khảo");
+
+        // Gửi thông báo đến học Sinh
+        let notificationData = notificationGenerate(
+          course,
+          selectedReview.studentId,
+          "grade_reviewed"
+        );
+        createNotification(notificationData).then((res) => {
+          notificationData.notification = res.data.notification;
+          socket.emit("createNewNotification", notificationData);
+        });
+
         handleCloseDialog();
       })
       .catch((err) => {
@@ -44,18 +58,38 @@ export default function ReviewRequests({ assignments, course }) {
       });
   };
 
-  const markReviewAsDone = (reviewId) => {
-    markAsDone({ review: reviewId })
-      .then((res) => {
-        setReviews(
-          reviews.filter(function (obj) {
-            return obj._id !== reviewId;
-          })
+  // Handle việc bình luận trong 1 yêu cầu phúc khảo
+  const sendReviewComment = (reviewId, comment, studentId) => {
+    sendComment({
+      review: reviewId,
+      sender: user.firstname + " " + user.lastname,
+      comment,
+    })
+      .then(() => {
+        setReviews((preReviews) => {
+          return preReviews.map((review) => {
+            if (review._id === reviewId) {
+              review.comments.push({
+                sender: user.firstname + " " + user.lastname,
+                comment,
+              });
+            }
+            return review;
+          });
+        });
+
+        let notificationData = notificationGenerate(
+          course,
+          studentId,
+          "review_comment"
         );
-        toast.success("Xử lí thành công yêu cầu phúc khảo");
+        createNotification(notificationData).then((res) => {
+          notificationData.notification = res.data.notification;
+          socket.emit("createNewNotification", notificationData);
+        });
       })
       .catch((err) => {
-        toast.error("Có lỗi xảy ra trong lúc gửi yêu cầu!");
+        toast.error("Có lỗi khi gửi bình luận");
       });
   };
 
@@ -102,8 +136,8 @@ export default function ReviewRequests({ assignments, course }) {
           <RequestDetail
             key={review._id}
             review={review}
+            sendReviewComment={sendReviewComment}
             handleOpenDialog={handleOpenDialog}
-            markReviewAsDone={markReviewAsDone}
           />
         ))
       ) : (
@@ -117,4 +151,33 @@ export default function ReviewRequests({ assignments, course }) {
       />
     </Paper>
   );
+}
+
+function notificationGenerate(course, studentId, type) {
+  let description;
+  switch (type) {
+    case "review_comment":
+      description = "Giáo viên đã bình luận trong yêu cầu phúc khảo của bạn";
+      break;
+    case "grade_reviewed":
+      description = "Yêu cầu phúc khảo của bạn đã được giải quyết";
+      break;
+    default:
+      description = "Có lỗi khi tạo thông báo";
+  }
+
+  const receiver = course.students.find((obj) => {
+    return obj.studentID === studentId;
+  });
+
+  return {
+    receiverID: receiver._id,
+    notification: {
+      title: course.name,
+      description: description,
+      type: type,
+      linkTo: "/course/" + course._id + "/studentGrade",
+      createdAt: new Date(),
+    },
+  };
 }
