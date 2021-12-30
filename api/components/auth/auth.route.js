@@ -10,4 +10,10 @@ router.post('/google', authController.google);
 
 router.post('/register', authController.register);
 
+router.post('/sendPasswordChangeEmail', authController.sendPasswordChangeEmail);
+
+router.get('/loginHelping/getUserChangePassword/:id', authController.getUserChangePassword);
+
+router.post('/loginHelping/changePassword', authController.changePassword);
+
 export default router;

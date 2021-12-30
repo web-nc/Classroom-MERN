@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL + "/auth";
 
-
 export function verifyGoogleToken(tokenId) {
   return (dispatch) => {
     axios
@@ -68,4 +67,16 @@ export function logout() {
     dispatch({ type: "LOGOUT" });
     localStorage.removeItem("token");
   };
+}
+
+export function sendPasswordChangeEmail({ email }) {
+  return axios.post(API_URL + "/sendPasswordChangeEmail", { email });
+}
+
+export function getUserChangePassword({ id, token }) {
+  return axios.get(`${API_URL}/loginHelping/getUserChangePassword/${id}?token=${token}`);
+}
+
+export function changePassword({ userId, token, newPassword }) {
+  return axios.post(`${API_URL}/loginHelping/changePassword`, { userId, token, newPassword });
 }

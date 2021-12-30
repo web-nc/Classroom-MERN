@@ -16,7 +16,8 @@ const User = new mongoose.Schema({
   gender: {
     type: String,
     enum: ["Nam", "Nữ", "Khác"],
-  }
+  },
+  changePasswordToken: String,
 });
 
 export default mongoose.model("user", User, "user");

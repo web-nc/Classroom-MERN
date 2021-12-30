@@ -7,6 +7,7 @@ import { UnexpectedComponent } from "../pages/404";
 import CourseDetail from "../pages/CourseDetail";
 import CourseHome from "../pages/CourseHome";
 import Login from "../pages/Login";
+import LoginHelping from "../pages/LoginHelping";
 import ProfilePage from "../pages/ProfilePage";
 import RegisterPage from "../pages/Register";
 import StudentConfirmPage from "../pages/StudentConfirmPage";
@@ -40,6 +41,10 @@ export default function MainRoute() {
         </Route>
         <Route path="/login" element={<AuthRoute loggedIn={loggedIn} />}>
           <Route path="/login" element={<Login />} />
+        </Route>
+        <Route path="/loginHelping" element={<AuthRoute loggedIn={loggedIn} />}>
+          <Route path="h/*" element={<LoginHelping />} />
+          <Route path="*" element={<UnexpectedComponent />} />
         </Route>
         <Route path="/user" element={<PrivateRoute loggedIn={loggedIn} />}>
           <Route path="u/*" element={<ProfilePage />} />

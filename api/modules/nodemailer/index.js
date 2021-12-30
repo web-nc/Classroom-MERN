@@ -71,3 +71,33 @@ export function sendInviteTeacherEmail(receiver, course, sender, inviteCode) {
         });
     });
 }
+
+export function sendPasswordChangeEmail({ email, _id }, token) {
+    return new Promise((resolve,reject)=>{
+        const mailOptions = {
+            from: process.env.MAILER_USERNAME,
+            to: email,
+            subject: `Đổi mật khẩu mới`,
+            html: `
+            <p>Chào bạn,</p></br>
+    
+            <p>Có phải bạn vừa gửi yêu cầu đổi mật khẩu mới không?</p>
+            
+            <p>Nếu đồng ý đổi mật khẩu mớI vui lòng truy cập vào link bên dưới và tiến hành nhập mật khẩu mới cho tài khoản của bạn:</p>
+            <p>${URL + '/loginHelping/h/changePassword/' + _id + "?token=" + token}</p></br>
+            
+            <p>Vui lòng không chia sẻ đường link cho bất cứ ai</p>
+            <p>Xin cảm ơn.</p>
+             `
+        };
+    
+        transporter.sendMail(mailOptions, function(err, info) {
+            if (err) {
+                console.log(err);
+                resolve(false);
+            } else {
+                resolve(true);
+            }
+        });
+    });
+}

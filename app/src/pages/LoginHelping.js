@@ -1,12 +1,12 @@
 import PersonSharpIcon from "@mui/icons-material/PersonSharp";
-import { Avatar, Divider, Grid, Paper, Typography } from "@mui/material";
+import { Avatar, Grid, Paper, Typography } from "@mui/material";
 import React from "react";
 import { useLocation } from "react-router";
-import { Link } from "react-router-dom";
-import LoginForm from "../components/Auth/LoginForm";
-import SocialLogin from "../components/Auth/SocialLogin";
+import { Link, Routes, Route } from "react-router-dom";
+import ChangePasswordForm from "../components/Auth/LoginHelping/ChangePasswordForm";
+import LoginHelpingForm from "../components/Auth/LoginHelping/LoginHelpingForm";
 
-function Login() {
+export default function LoginHelping() {
   const paperStyle = {
     padding: 20,
     height: "70vh",
@@ -22,9 +22,7 @@ function Login() {
   const typoStyle = { marginLeft: "10px" };
 
   const location = useLocation();
-  const from = location.state?.from || '/';
-
-  
+  const from = location.state?.from || "/";
   return (
     <Grid>
       <Paper elevation={10} style={paperStyle}>
@@ -32,26 +30,21 @@ function Login() {
           <Avatar style={avatarStyle}>
             <PersonSharpIcon style={iconStyle} />
           </Avatar>
-          <h2>Đăng nhập</h2>
         </Grid>
-        <SocialLogin />
-        <Divider sx={{ my: 2 }}></Divider>
-        <LoginForm />
+
+        <Routes>
+          <Route path="/" element={<LoginHelpingForm />} />
+          <Route path="sendEmail" element={<LoginHelpingForm />} />
+          <Route path="changePassword/:id" element={<ChangePasswordForm />} />
+        </Routes>
+
         <Typography>
-          {" "}
-          Chưa có tài khoản?
-          <Link to="/register" state={{ from: from }} style={typoStyle}>
-            Đăng ký
-          </Link>
-        </Typography>
-        <Typography>
-          <Link to="/loginHelping/h" state={{ from: from }}>
-            Quên mật khẩu?
+          Quay về trang
+          <Link to="/login" state={{ from: from }} style={typoStyle}>
+            Đăng nhập
           </Link>
         </Typography>
       </Paper>
     </Grid>
   );
 }
-
-export default Login;
