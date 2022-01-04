@@ -19,6 +19,8 @@ passport.use(new LocalStrategy(
         let check = false;
         check = await bcrypt.compareSync(password, user.password);
         if (check) {
+            if (user.isBanned)
+                return done(null, false, {message: 'Tài khoản đã bị khóa'});
             return done(null, user);
         } else {
             return done(null, false, {message: 'Mật khẩu không đúng!'});
@@ -37,6 +39,8 @@ passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
             return done(err, false);
         }
         if (user) {
+            if (user.isBanned)
+                return done(null, false, {message: 'Tài khoản đã bị khóa'});
             done(null, user);
         } else {
             done(null, false);

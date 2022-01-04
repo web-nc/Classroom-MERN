@@ -32,7 +32,7 @@ export function login(email, password) {
       })
       .catch((err) => {
         if (err.response && err.response.status === 401) {
-          toast.warn("Sai email hoặc mật khẩu!");
+          toast.warn("Đăng nhập thất bại");
         } else console.log(err);
       });
   };
