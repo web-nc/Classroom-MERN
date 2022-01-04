@@ -12,7 +12,11 @@ export function verifyGoogleToken(tokenId) {
         dispatch({ type: "LOGIN_SUCCESS", token: res.data.token });
       })
       .catch((err) => {
-        console.log("Unauthorized");
+        if (err.response.status === 402) {
+          toast.warn(err.response.data.message);
+        } else {
+          console.log("Unauthorized");
+        }
       });
   };
 }
@@ -33,6 +37,8 @@ export function login(email, password) {
       .catch((err) => {
         if (err.response && err.response.status === 401) {
           toast.warn("Sai email hoặc mật khẩu!");
+        } else if (err.response.status === 402) {
+          toast.warn(err.response.data.message);
         } else console.log(err);
       });
   };
@@ -74,9 +80,15 @@ export function sendPasswordChangeEmail({ email }) {
 }
 
 export function getUserChangePassword({ id, token }) {
-  return axios.get(`${API_URL}/loginHelping/getUserChangePassword/${id}?token=${token}`);
+  return axios.get(
+    `${API_URL}/loginHelping/getUserChangePassword/${id}?token=${token}`
+  );
 }
 
 export function changePassword({ userId, token, newPassword }) {
-  return axios.post(`${API_URL}/loginHelping/changePassword`, { userId, token, newPassword });
+  return axios.post(`${API_URL}/loginHelping/changePassword`, {
+    userId,
+    token,
+    newPassword,
+  });
 }

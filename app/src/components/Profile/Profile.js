@@ -103,26 +103,26 @@ function Profile({ info }) {
                 />
                 <TextField
                   variant="outlined"
-                  name="firstname"
+                  name="lastname"
                   label="Họ"
                   color="primary"
                   fullWidth
                   margin="dense"
                   value={lastName}
                   onChange={(e) => {
-                    setFirstName(e.target.value);
+                    setLastName(e.target.value);
                   }}
                 />
                 <TextField
                   variant="outlined"
-                  name="lastname"
+                  name="firstname"
                   label="Tên"
                   color="primary"
                   fullWidth
                   margin="normal"
                   value={firstName}
                   onChange={(e) => {
-                    setLastName(e.target.value);
+                    setFirstName(e.target.value);
                   }}
                 />
                 <TextField

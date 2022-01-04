@@ -18,6 +18,10 @@ const User = new mongoose.Schema({
     enum: ["Nam", "Nữ", "Khác"],
   },
   changePasswordToken: String,
+  isBanned: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 export default mongoose.model("user", User, "user");
