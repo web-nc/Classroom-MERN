@@ -11,6 +11,10 @@ const Course = new mongoose.Schema({
     briefName: String,
     gradeBoard: Array,
     reviewRequests: Array,
+    createdDate: {
+        type: Date,
+        default: () => Date.now(),
+    },
 });
 
 export default mongoose.model("course", Course, "course");

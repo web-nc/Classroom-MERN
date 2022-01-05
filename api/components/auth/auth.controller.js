@@ -10,12 +10,6 @@ const client = new OAuth2Client(
 );
 export default {
   login: async (req, res, next) => {
-    const user = await User.findOne({ _id: req.user._id });
-    if (user.isBanned) {
-      return res
-        .status(402)
-        .json({ message: "Tài khoản của bạn đang bị khóa" });
-    }
     const token = jwt.sign({ _id: req.user._id }, process.env.AUTH_SECRET);
     res.json({
       token: token,
@@ -37,7 +31,6 @@ export default {
             lastname: data.payload.family_name,
             gender: "Khác",
             courses: [],
-            isBanned: false,
           });
           user.save();
         }
@@ -90,6 +83,8 @@ export default {
     if (isSocialAccount) {
       return res.status(202).json({ message: "Tài khoản không hợp lệ" });
     }
+    if (receiver.isBanned)
+      return res.status(401).json({ message: "Tài khoản đã bị khóa" });
 
     const token = randomstring.generate(12);
 
@@ -120,6 +115,8 @@ export default {
     if (user.changePasswordToken !== token) {
       return res.status(202).json({ message: "Token không hợp lệ" });
     }
+    if (receiver.isBanned)
+      return res.status(401).json({ message: "Tài khoản đã bị khóa" });
 
     return res.status(200).json({ email: user.email });
   },
@@ -133,6 +130,8 @@ export default {
     if (user.changePasswordToken !== token) {
       return res.status(202).json({ message: "Token không hợp lệ" });
     }
+    if (receiver.isBanned)
+      return res.status(401).json({ message: "Tài khoản đã bị khóa" });
 
     user.changePasswordToken = "";
 
