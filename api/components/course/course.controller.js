@@ -5,6 +5,9 @@ import {
 } from "../../modules/nodemailer/index.js";
 import User from "../user/user.model.js";
 import Course from "./course.model.js";
+import Grade from "../grade/grade.model.js";
+import Review from "../review/review.model.js";
+import Assignment from "../assignment/assignment.model.js";
 
 export default {
   getCourses: (req, res) => {
@@ -400,10 +403,19 @@ export default {
       return res.status(401).json({ message: "NO_PERMISSION" });
     }
 
-    Course.findByIdAndRemove(_id, { new: true }, (err, docs) => {
+    Course.findByIdAndRemove(_id, { new: true }, async (err, docs) => {
       if (err) {
         return res.status(500).json({ message: err });
       } else {
+        // get all assignments in course then get rid of review, grade first before
+        // we remove assignments
+        const assignments = await Assignment.find({ course: docs._id }).lean();
+        assignments.forEach(async (doc) => {
+          await Grade.deleteMany({ assignment: doc._id });
+          await Review.deleteMany({ assignment: doc._id });
+        });
+        await Assignment.deleteMany({ course: docs._id });
+
         res.status(200).json({ message: "DELETE_SUCCESSFUL", payload: docs });
       }
     });

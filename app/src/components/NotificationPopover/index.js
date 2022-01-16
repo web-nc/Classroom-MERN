@@ -25,7 +25,7 @@ export default function NotificationPopover({ notifications, ...other }) {
 
         <List disablePadding>
           <Divider />
-          {notifications.map((notification, index) => (
+          {notifications.slice(0).reverse().map((notification, index) => (
             <NotificationItem key={index} notification={notification} />
           ))}
           {notifications.length === 0 && (

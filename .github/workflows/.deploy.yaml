@@ -1,0 +1,25 @@
+name: Push stack to heroku
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Release API
+      uses: akhileshns/heroku-deploy@v3.12.12
+      with:
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_app_name: "wnc-api-gradebook"
+        heroku_email: ${{secrets.HEROKU_API_KEY}}
+      env:
+        HD_APP_BASE: "api"
+    - name: Release Web Client
+      uses: akhileshns/heroku-deploy@v3.12.12
+      with:
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_app_name: "wnc-app-gradebook"
+        heroku_email: ${{secrets.HEROKU_API_KEY}}
+      env:
+        HD_APP_BASE: "app"

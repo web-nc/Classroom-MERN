@@ -27,6 +27,10 @@ export default function ChangePasswordForm() {
         }
       })
       .catch((err) => {
+        if (err.response.status === 401) {
+          toast.warn(err.response.data.message);
+          return navigator("/");
+        }
         console.log(err);
       });
 

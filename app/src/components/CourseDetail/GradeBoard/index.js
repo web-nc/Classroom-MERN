@@ -145,7 +145,6 @@ export default function GradeBoard({
           toast.warn("Thiếu quyền để thực hiện thao tác");
           return;
         }
-        toast.error("Có lỗi xảy ra khi cập nhật!");
       });
   };
 

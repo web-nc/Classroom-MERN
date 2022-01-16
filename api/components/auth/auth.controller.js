@@ -115,7 +115,7 @@ export default {
     if (user.changePasswordToken !== token) {
       return res.status(202).json({ message: "Token không hợp lệ" });
     }
-    if (receiver.isBanned)
+    if (user.isBanned)
       return res.status(401).json({ message: "Tài khoản đã bị khóa" });
 
     return res.status(200).json({ email: user.email });
@@ -130,7 +130,7 @@ export default {
     if (user.changePasswordToken !== token) {
       return res.status(202).json({ message: "Token không hợp lệ" });
     }
-    if (receiver.isBanned)
+    if (user.isBanned)
       return res.status(401).json({ message: "Tài khoản đã bị khóa" });
 
     user.changePasswordToken = "";

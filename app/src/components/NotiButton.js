@@ -10,7 +10,7 @@ import { getNotifications } from "../services/notification";
 
 const socket = io(process.env.REACT_APP_SOCKET_URL);
 
-export default function UserButton({ style }) {
+export default function NotiButton({ style }) {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
@@ -19,7 +19,8 @@ export default function UserButton({ style }) {
   const [notifications, setNotifications] = React.useState([]);
 
   React.useEffect(() => {
-    getNotifications().then((res) => setNotifications(res.data.notifications));
+    let isMounted = true;
+    getNotifications().then((res) => isMounted && setNotifications(res.data.notifications));
 
     dispatch(async (dispatch) => {
       return getUser().then((res) => {
@@ -29,6 +30,7 @@ export default function UserButton({ style }) {
 
     return () => {
       dispatch({ type: "USER_EMPTY" });
+      isMounted = false;
     };
   }, [dispatch]);
 
