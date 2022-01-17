@@ -223,7 +223,8 @@ export default function StudentGrade({ course, assignments, user }) {
             const assignment = assignments.find((obj) => {
               return obj._id === review.assignment;
             });
-            review.assignment = assignment.name;
+            review.assignment =
+              assignment !== undefined ? assignment.name : "Yêu cầu phúc khảo";
             return review;
           })
         );
@@ -257,12 +258,14 @@ export default function StudentGrade({ course, assignments, user }) {
                       marginRight: 2,
                     }}
                   >
-                    {userName.split(" ").map((s) => s[0])}
+                    {userName !== undefined
+                      ? userName.split(" ").map((s) => s[0])
+                      : ""}
                   </Avatar>
                 </div>
                 <div className="name">
                   <h3 style={{ fontWeight: "bold", marginTop: 5 }}>
-                    {userName}
+                    {userName !== undefined ? userName : ""}
                   </h3>
                   <h6>{"ID: " + user.studentID}</h6>
                 </div>
@@ -305,15 +308,15 @@ export default function StudentGrade({ course, assignments, user }) {
 }
 
 function notificationGenerate(assignmentId, course, userID, assignments) {
-  let title = assignments.find((obj) => {
+  const assignment = assignments.find((obj) => {
     return obj._id === assignmentId;
   });
-  if (title === undefined) title = "Có thông báo mới";
+  const title = assignment === undefined ? "Có thông báo mới" : assignment.name;
 
   return {
     receiverID: userID,
     notification: {
-      title: title.name,
+      title: title,
       description: "Có yêu cầu phúc khảo mới",
       type: "request_review",
       linkTo: "/course/" + course._id + "/grade",
