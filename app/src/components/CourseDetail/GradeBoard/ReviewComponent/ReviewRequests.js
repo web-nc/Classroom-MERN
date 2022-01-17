@@ -103,7 +103,10 @@ export default function ReviewRequests({ assignments, course, user }) {
               const assignment = assignments.find((obj) => {
                 return obj._id === review.assignment;
               });
-              review.assignment = assignment.name;
+              review.assignment =
+                assignment !== undefined
+                  ? assignment.name
+                  : "Yêu cầu phúc khảo";
               return review;
             })
           );

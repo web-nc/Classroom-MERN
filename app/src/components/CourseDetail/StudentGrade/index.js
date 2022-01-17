@@ -71,23 +71,24 @@ export default function StudentGrade({ course, assignments, user }) {
           const assignment = assignments.find((obj) => {
             return obj._id === newReview.assignment;
           });
-          newReview.assignment = assignment.name;
-          setReviews([...reviews, newReview]);
+          if (assignment !== undefined) {
+            newReview.assignment = assignment.name;
+            setReviews([...reviews, newReview]);
 
-          const teachers = Object.assign([], course.teachers);
-          teachers.push(course.owner);
-          for (const teacher of teachers) {
-            let notificationData = notificationGenerate(
-              selectedAssignment,
-              course,
-              teacher._id,
-              assignments
-            );
-
-            createNotification(notificationData).then((res) => {
-              notificationData.notification = res.data.notification;
-              socket.emit("createNewNotification", notificationData);
-            });
+            const teachers = Object.assign([], course.teachers);
+            teachers.push(course.owner);
+            for (const teacher of teachers) {
+              let notificationData = notificationGenerate(
+                selectedAssignment,
+                course,
+                teacher._id,
+                assignments
+              );
+              createNotification(notificationData).then((res) => {
+                notificationData.notification = res.data.notification;
+                socket.emit("createNewNotification", notificationData);
+              });
+            }
           }
         } else {
           toast.error(res.data.message);
@@ -206,9 +207,11 @@ export default function StudentGrade({ course, assignments, user }) {
             const assignment = assignments.find((obj) => {
               return obj._id === grade.assignment;
             });
-            const updatedGPA =
-              (grade.point * assignment.weight) / totalAssignmentsWeight;
-            setGPA((prevGPA) => prevGPA + updatedGPA);
+            if (assignment !== undefined) {
+              const updatedGPA =
+                (grade.point * assignment.weight) / totalAssignmentsWeight;
+              setGPA((prevGPA) => prevGPA + updatedGPA);
+            }
           }
         });
       });
@@ -302,9 +305,10 @@ export default function StudentGrade({ course, assignments, user }) {
 }
 
 function notificationGenerate(assignmentId, course, userID, assignments) {
-  const title = assignments.find((obj) => {
+  let title = assignments.find((obj) => {
     return obj._id === assignmentId;
   });
+  if (title === undefined) title = "Có thông báo mới";
 
   return {
     receiverID: userID,

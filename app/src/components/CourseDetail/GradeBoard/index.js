@@ -335,6 +335,7 @@ function calcGPA(row, assignments) {
     (pre, cur) => pre + cur.weight,
     0
   );
+  if (totalAssignmentsWeight === 0) return 0;
   let GPA = 0;
   for (const property in row) {
     if (
@@ -346,7 +347,9 @@ function calcGPA(row, assignments) {
       const assignment = assignments.find((obj) => {
         return obj._id === property;
       });
-      GPA = GPA + assignment.weight * row[property].point;
+      if (assignment !== undefined) {
+        GPA = GPA + assignment.weight * row[property].point;
+      }
     }
   }
   return (GPA = Math.round(GPA / totalAssignmentsWeight));
@@ -372,9 +375,10 @@ function notificationGenerate(
       description = "Có lỗi khi tạo thông báo";
   }
 
-  const title = assignments.find((obj) => {
+  let title = assignments.find((obj) => {
     return obj._id === assignmentId;
   });
+  if (title === undefined) title = "Có thông báo mới";
 
   const receiver = course.students.find((obj) => {
     return obj.studentID === studentId;
